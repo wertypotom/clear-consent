@@ -6,15 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "patch-package"
   },
   "dependencies": {
+    "@types/pdf-parse": "^1.1.5",
     "axios": "^1.13.5",
     "better-sqlite3": "^12.6.2",
-    "canvas": "^3.2.1",
     "lucide-react": "^0.564.0",
     "next": "16.1.6",
-    "pdfjs-dist": "^5.4.624",
+    "patch-package": "^8.0.1",
+    "pdf-parse": "^2.4.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.7.0",
