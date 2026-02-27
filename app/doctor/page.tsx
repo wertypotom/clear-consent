@@ -213,7 +213,9 @@ export default function DoctorPortal() {
                   <div>
                     <div style={{ fontSize: 40, marginBottom: 12 }}>📤</div>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                      Drop your consent PDF here
+                      {process.env.NODE_ENV === 'development'
+                        ? 'Drop your consent PDF or Word document here'
+                        : 'Drop your consent Word document (.docx) here'}
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                       or click to browse files
