@@ -6,7 +6,7 @@ import {
   getExplainerByFormId,
 } from '@/lib/db';
 import { generateExplainer } from '@/lib/gemini';
-import { extractPDFText } from '@/lib/pdfExtractor';
+import { PDFParse } from 'pdf-parse';
 
 // Vercel route config
 export const maxDuration = 60; // Allow 60 seconds for PDF processing
@@ -35,7 +35,10 @@ export async function POST(req: NextRequest) {
       // Demo mode: just use the text directly
       pdfText = buffer.toString('utf-8');
     } else {
-      pdfText = await extractPDFText(buffer);
+      const parser = new PDFParse({ data: buffer });
+      const result = await parser.getText();
+      pdfText = result.text;
+      await parser.destroy();
     }
 
     if (!pdfText || pdfText.trim().length < 50) {
