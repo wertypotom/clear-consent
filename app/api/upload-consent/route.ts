@@ -8,6 +8,10 @@ import {
 import { generateExplainer } from '@/lib/gemini';
 import { PDFParse } from 'pdf-parse';
 
+// Vercel route config
+export const maxDuration = 60; // Allow 60 seconds for PDF processing
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
