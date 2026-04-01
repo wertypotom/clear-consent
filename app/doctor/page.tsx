@@ -188,7 +188,7 @@ export default function DoctorPortal() {
                 <input
                   ref={fileRef}
                   type='file'
-                  accept='.pdf'
+                  accept='.pdf,.docx'
                   hidden
                   onChange={(e) => {
                     const f = e.target.files?.[0];

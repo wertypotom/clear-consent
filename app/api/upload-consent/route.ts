@@ -7,6 +7,7 @@ import {
 } from '@/lib/db';
 import { generateExplainer } from '@/lib/gemini';
 import { PDFParse } from 'pdf-parse';
+import mammoth from 'mammoth';
 
 // Vercel route config
 export const maxDuration = 60; // Allow 60 seconds for PDF processing
@@ -30,10 +31,18 @@ export async function POST(req: NextRequest) {
     let pdfText: string;
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Handle demo text files (text/plain) vs real PDFs
+    // Handle different file types
     if (file.type === 'text/plain') {
-      // Demo mode: just use the text directly
+      // Demo mode: text files
       pdfText = buffer.toString('utf-8');
+    } else if (
+      file.type ===
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.name.endsWith('.docx')
+    ) {
+      // Word document (serverless-friendly!)
+      const result = await mammoth.extractRawText({ buffer });
+      pdfText = result.value;
     } else {
       const parser = new PDFParse({ data: buffer });
       const result = await parser.getText();
