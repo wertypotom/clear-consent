@@ -1,14 +1,15 @@
-import axios from 'axios';
+import OpenAI from 'openai';
 import { shuffleQuizOptions } from './shuffleQuiz';
 
-const apiKey = process.env.ABACUS_API_KEY;
-const apiUrl = process.env.ABACUS_API_URL;
+const apiKey = process.env.OPENAI_API_KEY;
 
-if (!apiKey || !apiUrl) {
-  throw new Error(
-    'ABACUS_API_KEY and ABACUS_API_URL environment variables are required',
-  );
+if (!apiKey) {
+  throw new Error('OPENAI_API_KEY environment variable is required');
 }
+
+const openai = new OpenAI({
+  apiKey,
+});
 
 export interface KeyPoint {
   title: string;
@@ -145,28 +146,18 @@ CRITICAL REQUIREMENTS:
 5. Do not summarize or filter - be comprehensive`;
 
   try {
-    const response = await axios.post(
-      `${apiUrl}/chat/completions`,
-      {
-        model: 'gpt-5-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.3,
-        response_format: { type: 'json_object' },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
+    const response = await openai.chat.completions.create({
+      model: 'gpt-5-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      response_format: { type: 'json_object' },
+    });
 
-    const content = response.data.choices[0].message.content;
+    const content = response.choices[0].message.content;
     if (!content) {
-      throw new Error('Empty response from Abacus API');
+      throw new Error('Empty response from OpenAI API');
     }
 
     const parsed = JSON.parse(content);
@@ -178,12 +169,6 @@ CRITICAL REQUIREMENTS:
 
     return parsed;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Abacus API error:', {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    }
     throw error;
   }
 }
@@ -202,37 +187,21 @@ Context: ${procedureContext}
 Provide a simple definition and a real-world analogy.`;
 
   try {
-    const response = await axios.post(
-      `${apiUrl}/chat/completions`,
-      {
-        model: 'gpt-5-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.3,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
+    const response = await openai.chat.completions.create({
+      model: 'gpt-5-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
 
-    const content = response.data.choices[0].message.content;
+    const content = response.choices[0].message.content;
     if (!content) {
-      throw new Error('Empty response from Abacus API');
+      throw new Error('Empty response from OpenAI API');
     }
 
     return content;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Abacus API error:', {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    }
     throw error;
   }
 }
