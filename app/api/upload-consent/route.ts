@@ -6,8 +6,10 @@ import {
   getExplainerByFormId,
 } from '@/lib/db';
 import { generateExplainer } from '@/lib/gemini';
-import { PDFParse } from 'pdf-parse';
 import mammoth from 'mammoth';
+
+// Feature flag: Allow PDF parsing in development only
+const ENABLE_PDF_PARSING = process.env.NODE_ENV === 'development';
 
 // Vercel route config
 export const maxDuration = 60; // Allow 60 seconds for PDF processing
@@ -43,11 +45,29 @@ export async function POST(req: NextRequest) {
       // Word document (serverless-friendly!)
       const result = await mammoth.extractRawText({ buffer });
       pdfText = result.value;
-    } else {
+    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      // PDF parsing - only available in development
+      if (!ENABLE_PDF_PARSING) {
+        return NextResponse.json(
+          {
+            error:
+              'PDF upload not supported in production. Please use Word documents (.docx)',
+          },
+          { status: 400 },
+        );
+      }
+
+      // Dynamic import to avoid loading pdf-parse in production
+      const { PDFParse } = await import('pdf-parse');
       const parser = new PDFParse({ data: buffer });
       const result = await parser.getText();
       pdfText = result.text;
       await parser.destroy();
+    } else {
+      return NextResponse.json(
+        { error: 'Unsupported file type. Please upload .docx or .txt files' },
+        { status: 400 },
+      );
     }
 
     if (!pdfText || pdfText.trim().length < 50) {
