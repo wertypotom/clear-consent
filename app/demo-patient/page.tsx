@@ -109,8 +109,7 @@ By signing below, I acknowledge that I have read this document, that the procedu
         <div style={{ fontSize: 48 }}>⚠️</div>
         <p style={{ color: 'var(--accent-rose)', fontSize: 18 }}>{error}</p>
         <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-          Make sure ABACUS_API_KEY and ABACUS_API_URL are set in your .env.local
-          file
+          Make sure OPENAI_API_KEY is set in your .env.local file
         </p>
       </main>
     );
