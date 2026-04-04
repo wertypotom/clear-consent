@@ -4,6 +4,7 @@ import {
   getPatientSession,
   getConsentForm,
   getExplainerByFormId,
+  getVerificationById,
 } from '@/lib/db';
 
 export async function GET(
@@ -13,21 +14,7 @@ export async function GET(
   try {
     const { verificationId } = await params;
 
-    // Find verification by ID
-    const db = (await import('@/lib/db')).getDb();
-    const verification = db
-      .prepare('SELECT * FROM verification_records WHERE id = ?')
-      .get(verificationId) as
-      | {
-          id: string;
-          session_id: string;
-          answers: string;
-          score: number;
-          passed: number;
-          verified_at: string;
-          ip_address: string;
-        }
-      | undefined;
+    const verification = await getVerificationById(verificationId);
 
     if (!verification) {
       return NextResponse.json(
@@ -36,12 +23,12 @@ export async function GET(
       );
     }
 
-    const session = getPatientSession(verification.session_id);
+    const session = await getPatientSession(verification.session_id);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    const form = getConsentForm(session.form_id);
+    const form = await getConsentForm(session.form_id);
     if (!form) {
       return NextResponse.json(
         { error: 'Consent form not found' },

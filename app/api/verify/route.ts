@@ -26,16 +26,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const session = getPatientSession(sessionId);
+    const session = await getPatientSession(sessionId);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
     // Update patient name
-    updatePatientName(sessionId, patientName);
+    await updatePatientName(sessionId, patientName);
 
     // Get correct answers
-    const explainer = getExplainerByFormId(session.form_id);
+    const explainer = await getExplainerByFormId(session.form_id);
     if (!explainer) {
       return NextResponse.json(
         { error: 'Explainer not found' },
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     // Store verification
     const verificationId = uuid();
-    insertVerification({
+    await insertVerification({
       id: verificationId,
       session_id: sessionId,
       answers: JSON.stringify(results),
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (passed) {
-      completeSession(sessionId);
+      await completeSession(sessionId);
     }
 
     return NextResponse.json({

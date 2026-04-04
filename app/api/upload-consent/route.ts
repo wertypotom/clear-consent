@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     // Store consent form
     const formId = uuid();
-    insertConsentForm({
+    await insertConsentForm({
       id: formId,
       doctor_name: doctorName,
       procedure_name: procedureName,
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     const explainerContent = await generateExplainer(procedureName, pdfText);
 
     const explainerId = uuid();
-    insertExplainer({
+    await insertExplainer({
       id: explainerId,
       form_id: formId,
       key_points: JSON.stringify(explainerContent.keyPoints),

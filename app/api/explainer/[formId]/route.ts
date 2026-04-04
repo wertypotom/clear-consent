@@ -12,7 +12,7 @@ export async function GET(
 ) {
   try {
     const { formId } = await params;
-    const form = getConsentForm(formId);
+    const form = await getConsentForm(formId);
     if (!form) {
       return NextResponse.json(
         { error: 'Consent form not found' },
@@ -20,7 +20,7 @@ export async function GET(
       );
     }
 
-    const explainer = getExplainerByFormId(formId);
+    const explainer = await getExplainerByFormId(formId);
     if (!explainer) {
       return NextResponse.json(
         { error: 'Explainer not generated yet' },
@@ -30,7 +30,7 @@ export async function GET(
 
     // Create patient session
     const sessionId = uuid();
-    insertPatientSession({
+    await insertPatientSession({
       id: sessionId,
       form_id: formId,
       patient_name: null,
