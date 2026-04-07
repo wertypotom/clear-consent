@@ -3,9 +3,10 @@ import { v4 as uuid } from 'uuid';
 import {
   insertConsentForm,
   insertExplainer,
-  getExplainerByFormId,
+  insertDocumentSections,
 } from '@/lib/db';
 import { generateExplainer } from '@/lib/gemini';
+import { generateEmbedding, chunkText } from '@/lib/embeddings';
 import mammoth from 'mammoth';
 
 // Feature flag: Allow PDF parsing in development only
@@ -101,6 +102,27 @@ export async function POST(req: NextRequest) {
       reading_level: '6th grade',
       created_at: new Date().toISOString(),
     });
+
+    // RAG: Chunk and store embeddings for the PDF text
+    try {
+      const chunks = chunkText(pdfText);
+      const embeddingPromises = chunks.map(async (content) => {
+        const embedding = await generateEmbedding(content);
+        return {
+          id: uuid(),
+          form_id: formId,
+          content,
+          embedding,
+        };
+      });
+
+      const sections = await Promise.all(embeddingPromises);
+      await insertDocumentSections(sections);
+      console.log(`Stored ${sections.length} document sections for RAG`);
+    } catch (e) {
+      // Non-blocking error for embeddings
+      console.error('Failed to store RAG embeddings:', e);
+    }
 
     return NextResponse.json({
       formId,

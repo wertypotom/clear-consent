@@ -45,6 +45,21 @@ export interface VerificationRecord {
   ip_address: string | null;
 }
 
+export interface DocumentSection {
+  id: string;
+  form_id: string;
+  content: string;
+  embedding: number[];
+}
+
+export interface ChatMessage {
+  id?: string;
+  session_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  created_at?: string;
+}
+
 export async function insertConsentForm(form: ConsentForm) {
   const { error } = await supabase.from('consent_forms').insert(form);
   if (error) throw error;
@@ -139,6 +154,33 @@ export async function getVerificationById(
     .single();
   if (error && error.code !== 'PGRST116') throw error;
   return data || undefined;
+}
+
+export async function insertDocumentSections(sections: DocumentSection[]) {
+  const { error } = await supabase.from('document_sections').insert(sections);
+  if (error) throw error;
+}
+
+export async function searchDocumentSections(
+  formId: string,
+  queryEmbedding: number[],
+  matchThreshold: number = 0.5,
+  matchCount: number = 5,
+) {
+  const { data, error } = await supabase.rpc('match_document_sections', {
+    query_embedding: queryEmbedding,
+    match_threshold: matchThreshold,
+    match_count: matchCount,
+    filter_form_id: formId,
+  });
+
+  if (error) throw error;
+  return data as Array<{ id: string; content: string; similarity: number }>;
+}
+
+export async function insertChatMessage(msg: ChatMessage) {
+  const { error } = await supabase.from('chat_messages').insert(msg);
+  if (error) throw error;
 }
 
 export async function getDb() {

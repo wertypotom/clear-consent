@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { highlightMedicalTerms } from './highlightTerms';
+import { useSession } from '@/app/context/SessionContext';
 
 interface KeyPoint {
   title: string;
@@ -83,6 +84,7 @@ export default function PatientPage() {
   const [step, setStep] = useState<Step>('name');
   const [patientName, setPatientName] = useState('');
   const [data, setData] = useState<ExplainerData | null>(null);
+  const { setSessionId } = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -119,6 +121,7 @@ export default function PatientPage() {
         if (!res.ok) throw new Error('Failed to load');
         const d = await res.json();
         setData(d);
+        setSessionId(d.sessionId); // Store globally for chat
       } catch {
         setError('Could not load consent information. Please check your link.');
       } finally {
