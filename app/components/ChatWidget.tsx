@@ -21,11 +21,30 @@ export default function ChatWidget() {
     if (!input.trim()) return;
     
     const newMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, newMsg]);
+    const newMessages = [...messages, newMsg];
+    setMessages(newMessages);
     setInput('');
 
-    // Placeholder for your AI API call
-    // const res = await fetch('/api/chat', { ... })
+    try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: newMessages }),
+        });
+    
+        const data = await response.json();
+    
+        if (data.error) throw new Error(data.error);
+    
+        // Add the AI's reply to the chat
+        setMessages((prev) => [...prev, { role: 'assistant', content: data.content }]);
+        
+      } catch (err) {
+        setMessages((prev) => [
+          ...prev, 
+          { role: 'assistant', content: 'Sorry, I am having trouble connecting right now.' }
+        ]);
+      }
   };
 
   return (
