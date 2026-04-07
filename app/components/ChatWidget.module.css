@@ -1,0 +1,120 @@
+.container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .chatWindow {
+    width: 350px;
+    height: 500px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-glow);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .header {
+    padding: 16px;
+    background: rgba(59, 130, 246, 0.1);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .headerTitle {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent-blue-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  
+  .messageList {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    max-width: 85%;
+    line-height: 1.5;
+  }
+  
+  .user {
+    background: var(--accent-blue);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  
+  .assistant {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    border: 1px solid var(--border);
+  }
+  
+  .inputArea {
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+  
+  .input {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .input:focus {
+    border-color: var(--accent-blue);
+  }
+
+  .toggleBtn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gradient-hero);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+  }
+  
+  .toggleBtn:hover {
+    transform: scale(1.1) rotate(5deg);
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
