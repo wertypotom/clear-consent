@@ -9,8 +9,6 @@ if (!apiKey) {
 
 const openai = new OpenAI({ apiKey });
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
 export interface KeyPoint {
   title: string;
   explanation: string;
@@ -177,8 +175,6 @@ Respond with: { "questions": [ { "id": number, "scenario": string, "question": s
   const parsed = JSON.parse(response.choices[0].message.content!);
   return parsed.questions;
 }
-
-// ─── Public API: Parallel orchestrator ──────────────────────────────────────
 
 export async function generateExplainer(
   procedureName: string,
