@@ -5,7 +5,7 @@ import {
   insertExplainer,
   insertDocumentSections,
 } from '@/lib/db';
-import { generateExplainer } from '@/lib/gemini';
+import { generateExplainer } from '@/lib/ai';
 import { generateEmbedding, chunkText } from '@/lib/embeddings';
 import mammoth from 'mammoth';
 

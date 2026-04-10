@@ -34,7 +34,6 @@ interface QuizQuestion {
   options: { id: string; text: string }[];
   correctId: string;
   explanation: string;
-  relatedKeyPoint: number;
 }
 
 interface ExplainerData {
