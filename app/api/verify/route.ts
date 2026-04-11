@@ -31,10 +31,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    // Update patient name
     await updatePatientName(sessionId, patientName);
 
-    // Get correct answers
     const explainer = await getExplainerByFormId(session.form_id);
     if (!explainer) {
       return NextResponse.json(
@@ -60,9 +58,8 @@ export async function POST(req: NextRequest) {
 
     const totalQuestions = questions.length;
     const score = Math.round((correct / totalQuestions) * 100);
-    const passed = correct === totalQuestions; // Must get ALL correct
+    const passed = correct === totalQuestions; 
 
-    // Track which topics need re-education (wrong answers)
     const reEducationTopics = results
       .filter((r) => !r.isCorrect)
       .map((r) => {
@@ -72,7 +69,6 @@ export async function POST(req: NextRequest) {
           : 'Unknown topic';
       });
 
-    // Store verification
     const verificationId = uuid();
     await insertVerification({
       id: verificationId,

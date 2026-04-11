@@ -33,47 +33,43 @@ export default function ChatWidget() {
     setIsTyping(true);
 
     try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            messages: [...messages, userMsg],
-            formId: formId,
-            sessionId: sessionId 
-          }),
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMsg],
+          formId: formId,
+          sessionId: sessionId,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Stream failed');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No reader');
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
+      let accumulatedResponse = '';
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedResponse += chunk;
+
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: accumulatedResponse,
+          };
+          return updated;
         });
-    
-        if (!response.ok) throw new Error('Stream failed');
-        
-        // Handle streaming response
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error('No reader');
-
-        // Add empty assistant message to start streaming into
-        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
-        
-        let accumulatedResponse = '';
-        const decoder = new TextDecoder();
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          accumulatedResponse += chunk;
-
-          // Update the last message (the assistant's one)
-          setMessages(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1] = { 
-              role: 'assistant', 
-              content: accumulatedResponse 
-            };
-            return updated;
-          });
-        }
-        
-      } catch (err) {
+      }
+    } catch (err) {
         console.error('Chat error:', err);
         setMessages((prev) => [
           ...prev, 

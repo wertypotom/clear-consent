@@ -58,7 +58,7 @@ async function generateKeyPoints(
   pdfText: string,
 ): Promise<KeyPoint[]> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -85,7 +85,7 @@ async function generateMedicalTerms(
   pdfText: string,
 ): Promise<MedicalTerm[]> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -113,7 +113,7 @@ async function generateRisks(
   pdfText: string,
 ): Promise<RiskItem[]> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -144,7 +144,7 @@ async function generateQuestions(
   pdfText: string,
 ): Promise<QuizQuestion[]> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -206,7 +206,7 @@ export async function explainTerm(
   procedureContext: string,
 ): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-mini',
     messages: [
       {
         role: 'system',

@@ -9,11 +9,9 @@ import { generateExplainer } from '@/lib/ai';
 import { generateEmbedding, chunkText } from '@/lib/embeddings';
 import mammoth from 'mammoth';
 
-// Feature flag: Allow PDF parsing in development only
 const ENABLE_PDF_PARSING = process.env.NODE_ENV === 'development';
 
-// Vercel route config
-export const maxDuration = 60; // Allow 60 seconds for PDF processing
+export const maxDuration = 60; 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
@@ -30,24 +28,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse PDF text
     let pdfText: string;
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Handle different file types
     if (file.type === 'text/plain') {
-      // Demo mode: text files
       pdfText = buffer.toString('utf-8');
     } else if (
       file.type ===
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
       file.name.endsWith('.docx')
     ) {
-      // Word document (serverless-friendly!)
       const result = await mammoth.extractRawText({ buffer });
       pdfText = result.value;
     } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-      // PDF parsing - only available in development
       if (!ENABLE_PDF_PARSING) {
         return NextResponse.json(
           {
@@ -58,7 +51,6 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Dynamic import to avoid loading pdf-parse in production
       const { PDFParse } = await import('pdf-parse');
       const parser = new PDFParse({ data: buffer });
       const result = await parser.getText();
@@ -78,7 +70,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Store consent form
     const formId = uuid();
     await insertConsentForm({
       id: formId,
@@ -88,7 +79,6 @@ export async function POST(req: NextRequest) {
       created_at: new Date().toISOString(),
     });
 
-    // Generate AI explainer
     const explainerContent = await generateExplainer(procedureName, pdfText);
 
     const explainerId = uuid();
@@ -103,7 +93,6 @@ export async function POST(req: NextRequest) {
       created_at: new Date().toISOString(),
     });
 
-    // RAG: Chunk and store embeddings for the PDF text
     try {
       const chunks = chunkText(pdfText);
       const embeddingPromises = chunks.map(async (content) => {
@@ -120,7 +109,6 @@ export async function POST(req: NextRequest) {
       await insertDocumentSections(sections);
       console.log(`Stored ${sections.length} document sections for RAG`);
     } catch (e) {
-      // Non-blocking error for embeddings
       console.error('Failed to store RAG embeddings:', e);
     }
 

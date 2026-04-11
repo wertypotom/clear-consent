@@ -197,7 +197,6 @@ export default function PatientPage() {
       setVerifyResult(result);
       setStep('result');
 
-      // Fetch certificate if passed
       if (result.passed) {
         const certRes = await fetch(
           `/api/certificate/${result.verificationId}`,

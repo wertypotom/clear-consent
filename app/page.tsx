@@ -25,26 +25,6 @@ export default function Home() {
             Clear<span className='gradient-text'>Consent</span>
           </span>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <Link
-            href='/doctor'
-            className='btn-secondary'
-            style={{ padding: '10px 20px', fontSize: 14 }}
-          >
-            Doctor Portal
-          </Link>
-          <span
-            className='btn-primary'
-            style={{
-              padding: '10px 20px',
-              fontSize: 14,
-              opacity: 0.6,
-              cursor: 'default',
-            }}
-          >
-            HIPAA Ready
-          </span>
-        </div>
       </nav>
 
       {/* HERO */}
